@@ -1,18 +1,16 @@
 const express = require('express');
 const path = require('path');
+const db = require('./db');
 
 const app = express();
 
-const db = [
-  { id: 1, author: 'John Doe', text: 'This company is worth every coin!' },
-  { id: 2, author: 'Amanda Doe', text: 'They really know how to make you happy.' },
-];
+
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 app.get('/testimonials', (req, res) => {
-  res.json(db);
+  res.json( db.testimonials );
 });
 
 app.get('/testimonials/random', (req, res) => {
@@ -52,30 +50,30 @@ app.delete('/testimonials/:id', (req, res) => {
 const showByID = (id, res) => {
   let element = '';
 
-  db.map(elem => {if(elem.id === parseInt(id)) element = elem});
+  db.testimonials.map(elem => {if(elem.id === parseInt(id)) element = elem});
 
   res.json(element);
 };
 
 const showRandom = (res) => {
-  const randomElem = db[Math.floor(Math.random() * db.length)];
+  const randomElem = db[Math.floor(Math.random() * db.testimonials.length)];
   res.json(randomElem);
 };
 
 const addElem = (elem) => {
   const newElem = { author: elem.author, text: elem.text, id: Math.floor(Math.random() * 99)};
-  db.push(newElem);
+  db.testimonials.push(newElem);
 };
 
 const modifyElem = (newElem, id) => {
-  db = db.map(oldElem => {if(oldElem.id === parseInt(id)){
+  db = db.testimonials.map(oldElem => {if(oldElem.id === parseInt(id)){
     oldElem.author = newElem.author;
     oldElem.text = newElem.text
   }})
 };
 
 const deleteElem = (id) => {
-  db.map(item => item.id === parseInt(id) && db.splice(item.index, 1))
+  db.testimonials.map(item => item.id === parseInt(id) && db.testimonials.splice(item.index, 1))
 };
 
 app.use((req, res) => {
