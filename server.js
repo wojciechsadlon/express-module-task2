@@ -4,76 +4,67 @@ const db = require('./db');
 
 const app = express();
 
+const testimonialsRoutes = require('./routes/testimonials.routes');
+const concertsRoutes = require('./routes/concerts.routes');
+const seatsRoutes = require('./routes/seats.routes');
 
 
+// app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use('/', testimonialsRoutes);
+app.use('/', concertsRoutes);
+app.use('/', seatsRoutes);
 
-app.get('/testimonials', (req, res) => {
-  res.json( db.testimonials );
-});
-
-app.get('/testimonials/random', (req, res) => {
-  showRandom(res);
-});
-
-app.get('/testimonials/:id', (req, res) => {
-  showByID(req.params.id, res);
-});
-
-app.post('/testimonials', (req, res) => {
-  const { author, text } = req.body;
-
-  if(author && text){
-    res.json({message: 'OK'});
-    addElem(req.body);
-  }else res.json({message: 'ERROR'});
-});
-
-app.put('/testimonials/:id', (req, res) => {
-  const { author, text } = req.body;
-
-  if(author && text){
-    res.json({message: 'OK'});
-    modifyElem(req.body, req.params.id);
-  }else res.json({message: 'ERROR'});
-});
-
-app.delete('/testimonials/:id', (req, res) => {
-
-  if(req.params.id){
-    res.json({message: 'OK'});
-    deleteElem(req.params.id);
-  }else res.json({message: 'ERROR'});
-});
-
-const showByID = (id, res) => {
+// functions
+const showByID = (id, res, category) => {
   let element = '';
 
-  db.testimonials.map(elem => {if(elem.id === parseInt(id)) element = elem});
+  db[category].map(elem => {if(elem.id === parseInt(id)) element = elem});
 
   res.json(element);
 };
 
-const showRandom = (res) => {
-  const randomElem = db[Math.floor(Math.random() * db.testimonials.length)];
+const showRandom = (res, category) => {
+  const randomElem = db[category][Math.floor(Math.random() * db.testimonials.length)];
   res.json(randomElem);
 };
 
-const addElem = (elem) => {
-  const newElem = { author: elem.author, text: elem.text, id: Math.floor(Math.random() * 99)};
+const addTestimonial = (resource) => {
+  const newElem = { author: resource.author, text: resource.text, id: Math.floor(Math.random() * 99)};
   db.testimonials.push(newElem);
 };
+const addConcert = (resource) => {
+  const newElem = { 
+    performer: resource.performer, 
+    genre: resource.genre, 
+    price: resource.price, 
+    day: resource.day, 
+    image: resource.image, 
+    id: Math.floor(Math.random() * 99)
+  };
+  db.concerts.push(newElem);
+};
+const addSeat = (resource) => {
+  const newElem = { 
+    day: resource.day, 
+    seat: resource.seat, 
+    client: resource.client, 
+    email: resource.email, 
+    id: Math.floor(Math.random() * 99)
+  };
 
-const modifyElem = (newElem, id) => {
-  db = db.testimonials.map(oldElem => {if(oldElem.id === parseInt(id)){
-    oldElem.author = newElem.author;
-    oldElem.text = newElem.text
+  db.seats.push(newElem);
+};
+
+const modifyResource = (newElem, id, category) => {
+  db = db[category].map(oldElem => {if(oldElem.id === parseInt(id)){
+    oldElem = newElem
   }})
 };
 
-const deleteElem = (id) => {
-  db.testimonials.map(item => item.id === parseInt(id) && db.testimonials.splice(item.index, 1))
+const deleteElem = (id, category) => {
+  db[category].map(item => item.id === parseInt(id) && db[category].splice(item.index, 1))
 };
 
 app.use((req, res) => {
