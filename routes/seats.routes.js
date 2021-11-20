@@ -19,7 +19,6 @@ router.route('/seats').post((req, res) => {
 
   if(day && seat && client && email){
     addSeat(req.body);
-    res.json({message: 'OK'});
   }else res.json({message: 'ERROR'});
 });
 
@@ -57,15 +56,19 @@ const showRandom = (res, category) => {
 };
 
 const addSeat = (resource) => {
-  const newElem = { 
-    day: resource.day, 
-    seat: resource.seat, 
-    client: resource.client, 
-    email: resource.email, 
-    id: Math.floor(Math.random() * 99)
-  };
+  if(!db.seats.some(elem => elem.seat === resource.seat && elem.day === resource.day)){
 
-  db.seats.push(newElem);
+    const newElem = { 
+      day: resource.day, 
+      seat: resource.seat, 
+      client: resource.client, 
+      email: resource.email, 
+      id: Math.floor(Math.random() * 99)
+    };
+
+    db.seats.push(newElem);
+    res.json({message: 'OK'});
+  } else res.status(405).json({message: "The slot is already taken..."});
 };
 
 const modifyResource = (newElem, id, category) => {
