@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const db = require('./../db');
 
-
 router.route('/seats').get((req, res) => {
   res.json( db.seats );
 });
@@ -19,8 +18,8 @@ router.route('/seats').post((req, res) => {
   const { day, seat, client, email } = req.body;
 
   if(day && seat && client && email){
-    res.json({message: 'OK'});
     addSeat(req.body);
+    res.json({message: 'OK'});
   }else res.json({message: 'ERROR'});
 });
 
@@ -28,26 +27,26 @@ router.route('/seats/:id').put((req, res) => {
   const { day, seat, client, email } = req.body;
 
   if(day && seat && client && email){
-    res.json({message: 'OK'});
     modifyResource(req.body, req.params.id, 'seats');
+    res.json({message: 'OK'});
   }else res.json({message: 'ERROR'});
 });
 
 router.route('/seats/:id').delete((req, res) => {
 
   if(req.params.id){
-    res.json({message: 'OK'});
     deleteElem(req.params.id, 'seats');
+    res.json({message: 'OK'});
   }else res.json({message: 'ERROR'});
 });
 
 
-// functions
+// functionstions
 
 const showByID = (id, res, category) => {
   let element = '';
 
-  db[category].map(elem => {if(elem.id === parseInt(id)) element = elem});
+  db[category].find(elem => {if(elem.id === parseInt(id)) element = elem});
 
   res.json(element);
 };
@@ -70,13 +69,15 @@ const addSeat = (resource) => {
 };
 
 const modifyResource = (newElem, id, category) => {
-  db = db[category].map(oldElem => {if(oldElem.id === parseInt(id)){
-    oldElem = newElem
-  }})
+  let element = db[category].find(elem => elem.id === parseInt(id));
+  const resourceIndex = db[category].indexOf(element);
+  db[category].splice(resourceIndex, 1, newElem)
 };
 
 const deleteElem = (id, category) => {
-  db[category].map(item => item.id === parseInt(id) && db[category].splice(item.index, 1))
+  let element = db[category].find(elem => elem.id === parseInt(id));
+  const resourceIndex = db[category].indexOf(element);
+  db[category].splice(resourceIndex, 1)
 };
 
 module.exports = router;

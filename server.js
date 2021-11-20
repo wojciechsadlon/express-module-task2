@@ -74,3 +74,11 @@ app.use((req, res) => {
 app.listen(8000, () => {
   console.log('Server is running on port: 8000');
 });
+
+// exports.showByID = showByID;
+// module.exports = showRandom;
+// module.exports = addTestimonial;
+// module.exports = addConcert;
+// module.exports = addSeat;
+// module.exports = modifyResource;
+// module.exports = deleteElem;

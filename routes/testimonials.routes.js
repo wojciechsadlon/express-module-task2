@@ -2,6 +2,11 @@ const express = require('express');
 const router = express.Router();
 const db = require('./../db');
 
+// const func = require('./../server');
+// const showByID = require('./../server');
+// const addTestimonial = require('./../server');
+// const modifyResource = require('./../server');
+// const deleteElem = require('./../server');
 
 router.route('/testimonials').get((req, res) => {
   res.json( db.testimonials );
@@ -19,8 +24,8 @@ router.route('/testimonials').post((req, res) => {
   const { author, text } = req.body;
 
   if(author && text){
-    res.json({message: 'OK'});
     addTestimonial(req.body);
+    res.json({message: 'OK'});
   }else res.json({message: 'ERROR'});
 });
 
@@ -28,25 +33,25 @@ router.route('/testimonials/:id').put((req, res) => {
   const { author, text } = req.body;
 
   if(author && text){
-    res.json({message: 'OK'});
     modifyResource(req.body, req.params.id, 'testimonials');
+    res.json({message: 'OK'});
   }else res.json({message: 'ERROR'});
 });
 
 router.route('/testimonials/:id').delete((req, res) => {
 
   if(req.params.id){
-    res.json({message: 'OK'});
     deleteElem(req.params.id, 'testimonials');
+    res.json({message: 'OK'});
   }else res.json({message: 'ERROR'});
 });
 
-// functions
+// functionstions
 
 const showByID = (id, res, category) => {
   let element = '';
 
-  db[category].map(elem => {if(elem.id === parseInt(id)) element = elem});
+  db[category].find(elem => {if(elem.id === parseInt(id)) element = elem});
 
   res.json(element);
 };
@@ -62,13 +67,15 @@ const addTestimonial = (resource) => {
 };
 
 const modifyResource = (newElem, id, category) => {
-  db = db[category].map(oldElem => {if(oldElem.id === parseInt(id)){
-    oldElem = newElem
-  }})
+  let element = db[category].find(elem => elem.id === parseInt(id));
+  const resourceIndex = db[category].indexOf(element);
+  db[category].splice(resourceIndex, 1, newElem)
 };
 
 const deleteElem = (id, category) => {
-  db[category].map(item => item.id === parseInt(id) && db[category].splice(item.index, 1))
+  let element = db[category].find(elem => elem.id === parseInt(id));
+  const resourceIndex = db[category].indexOf(element);
+  db[category].splice(resourceIndex, 1)
 };
 
 module.exports = router;
