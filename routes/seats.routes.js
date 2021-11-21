@@ -18,7 +18,7 @@ router.route('/seats').post((req, res) => {
   const { day, seat, client, email } = req.body;
 
   if(day && seat && client && email){
-    addSeat(req.body);
+    addSeat(req.body, res);
   }else res.json({message: 'ERROR'});
 });
 
@@ -55,7 +55,7 @@ const showRandom = (res, category) => {
   res.json(randomElem);
 };
 
-const addSeat = (resource) => {
+const addSeat = (resource, res) => {
   if(!db.seats.some(elem => elem.seat === resource.seat && elem.day === resource.day)){
 
     const newElem = { 
