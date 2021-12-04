@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('./../db');
+const socket = require('socket.io')
 
 router.route('/seats').get((req, res) => {
   res.json( db.seats );
@@ -19,6 +20,7 @@ router.route('/seats').post((req, res) => {
 
   if(day && seat && client && email){
     addSeat(req.body, res);
+    req.io.sockets.emit('updateSeats', db.seats);
   }else res.json({message: 'ERROR'});
 });
 
